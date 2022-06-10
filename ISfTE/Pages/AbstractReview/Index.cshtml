@@ -1,0 +1,38 @@
+﻿@page
+@using ISfTE.Utility
+
+@if (User.IsInRole(SD.AdminRole))
+{
+    <div class="border backgroundWhite container">
+        <div class="row">
+            <div class="col-6">
+                <h2 class="text-info">Abstract Review</h2>
+            </div>
+        </div>
+        <br />
+        <br />
+        <table id="DT_load" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Ratings</th>
+                    <th>Avg Rating</th>
+                    <th>Approval</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+}
+else
+{
+    <h1 class="text-danger">Access Denied</h1>
+}
+
+
+@section Scripts{
+    <script src="~/js/abstractReview.js"></script>
+
+}

@@ -1,0 +1,387 @@
+﻿@page
+@using ISfTE.Utility
+@model ISfTE.Pages.Registration.UpsertModel
+
+@if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.RaterRole) || User.IsInRole(SD.AttendeeRole))
+{
+    @if (Model.user.Status == SD.AbstractRejected || Model.user.Status == SD.Initial || Model.user.Status == SD.AbstractSubmitted)
+    {
+        <h1 class="text-center text-danger">Your Abstract Must Be Approved Before Registering</h1>
+    }
+    else
+    {
+        <form method="post" asp-action="Upsert" enctype="multipart/form-data">
+            <div class="container">
+                <div class="row px-2 mx-2 backgroundWhite border">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    @if (Model.RegistrationObj.Registration.Id != 0)
+                    {
+                        <input type="hidden" asp-for="RegistrationObj.Registration.Id" />
+                    }
+                    @if (Model.RegistrationObj.Guest.Id != 0)
+                    {
+                        <input type="hidden" asp-for="RegistrationObj.Guest.Id" />
+                    }
+
+                    <input type="hidden" asp-for="RegistrationObj.Registration.AttendeeId" />
+
+                    <div class="col-12 px-3" style="border-bottom: 1px solid #325d88">
+                        <h2 class="text-info">@(Model.RegistrationObj.Registration.Id != 0 ? "Update Your" : "New") Registration</h2>
+                    </div>
+                    <div class="col-8 pt-3">
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label class="text-danger">* is a required field</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-3">
+                                *<label asp-for="RegistrationObj.Registration.StreetLine1"></label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" asp-for="RegistrationObj.Registration.StreetLine1" />
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.StreetLine1"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.StreetLine2"></label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" asp-for="RegistrationObj.Registration.StreetLine2" />
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.StreetLine2"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.TerritoryState"></label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" asp-for="RegistrationObj.Registration.TerritoryState" />
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.TerritoryState"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.PostalCode"></label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" asp-for="RegistrationObj.Registration.PostalCode" />
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.PostalCode"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                *<label asp-for="RegistrationObj.Registration.CountryId"></label>
+                            </div>
+                            <div class="col-9">
+                                @Html.DropDownListFor(m => m.RegistrationObj.Registration.CountryId, Model.RegistrationObj.CountryList,
+            "Please select a Country", new { @id = "CountryDrop", @class = "form-control", @onclick = "PriceCalc()" })
+
+                                @Html.DropDownListFor(m => m.RegistrationObj.SelectedCountry, Model.RegistrationObj.Countries,
+            "Shouldn't see this.", new { @id = "Countries", @class = "form-control", @style = "display:none" })
+
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.CountryId"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.Fax"></label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" asp-for="RegistrationObj.Registration.Fax" />
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.Fax"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.ArrivalTransport"></label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" asp-for="RegistrationObj.Registration.ArrivalTransport" />
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.ArrivalTransport"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.ArrivalDateTime"></label>
+                            </div>
+                            <div class="col-9">
+                                <input id="datepicker" type="date" class="form-control at" asp-for="RegistrationObj.Registration.ArrivalDateTime" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.DepartTransport"></label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" asp-for="RegistrationObj.Registration.DepartTransport" />
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.DepartTransport"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.DepartDateTime"></label>
+                            </div>
+                            <div class="col-9">
+                                <input id="datepicker" type="date" class="form-control dt" asp-for="RegistrationObj.Registration.DepartDateTime" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-3">
+                                <label asp-for="RegistrationObj.Registration.DietDisabilityNeeds"></label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" asp-for="RegistrationObj.Registration.DietDisabilityNeeds" />
+                                <span class="text-danger" asp-validation-for="RegistrationObj.Registration.DietDisabilityNeeds"></span>
+                            </div>
+                        </div>
+
+                        <div class="accordion" id="hotelAccord">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTwo"
+                                            aria-expanded="true" aria-controls="collapseTwo">
+                                        + Hotel Information (Optional)
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#hotelAccord">
+                                <br />
+                                <div class="form-group row">
+                                    <div class="col-12">
+                                        <label>
+                                            By registering with off-site hotel accommodations, you forgo the provided Weber State accommodations included in the package.
+                                            Declining the provided accommodations does not decrease the price of the package.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-3">
+                                        <label asp-for="RegistrationObj.Registration.Hotel"></label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input class="form-control" asp-for="RegistrationObj.Registration.Hotel" />
+                                        <span class="text-danger" asp-validation-for="RegistrationObj.Registration.Hotel"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-3">
+                                        <label asp-for="RegistrationObj.Registration.HotelInDate"></label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input id="datepicker" type="date" class="form-control at" asp-for="RegistrationObj.Registration.HotelInDate" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-3">
+                                        <label asp-for="RegistrationObj.Registration.HotelOutDate"></label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input id="datepicker" type="date" class="form-control at" asp-for="RegistrationObj.Registration.HotelOutDate" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion" id="guestAccord">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                                            aria-expanded="true" aria-controls="collapseOne">
+                                        + 1 Guest (Optional)
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#guestAccord">
+
+                                <input type="hidden" asp-for="RegistrationObj.Guest.RegistrationId" />
+                                <br />
+                                <div class="form-group row">
+                                    <div class="col-3">
+                                        <label asp-for="RegistrationObj.Guest.FirstName"></label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input id="GuestFirstName" class="form-control" asp-for="RegistrationObj.Guest.FirstName" oninput="PriceCalc()" />
+                                        <span class="text-danger" asp-validation-for="RegistrationObj.Guest.FirstName"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-3">
+                                        <label asp-for="RegistrationObj.Guest.LastName"></label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input id="GuestLastName" class="form-control" asp-for="RegistrationObj.Guest.LastName" oninput="PriceCalc()" />
+                                        <span class="text-danger" asp-validation-for="RegistrationObj.Guest.LastName"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-3">
+                                        <label asp-for="RegistrationObj.Guest.Email"></label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input id="GuestEmail" class="form-control" asp-for="RegistrationObj.Guest.Email" oninput="PriceCalc()" />
+                                        <span class="text-danger" asp-validation-for="RegistrationObj.Guest.Email"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-3">
+                                        <label asp-for="RegistrationObj.Guest.Relationship"></label>
+                                    </div>
+                                    <div class="col-9">
+                                        <select id="GuestRelationship" class="form-control" asp-for="RegistrationObj.Guest.Relationship" oninput="PriceCalcGuest">
+                                            <option selected value=""> -- Select an Option -- </option>
+                                            <option value="Spouse">Spouse</option>
+                                            <option value="Parent">Parent</option>
+                                            <option value="Sibling">Sibling</option>
+                                            <option value="Colleage">Colleague</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <span class="text-danger" asp-validation-for="RegistrationObj.Guest.Relationship"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div class="col-12">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between bg-light">
+                                    <span class="text-info"> SubTotal (USD)</span>
+                                    <strong class="text-info">$ <span id="txtOrderTotal">@Model.RegistrationObj.Registration.TotalCost.ToString("0.00")</span></strong>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <br />
+
+                        <div class="form-group row">
+                            <div class="col-9 offset-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        @if (Model.RegistrationObj.Registration.Id != 0)
+                                        {
+                                            <button type="submit" class="btn btn-primary form-control">Update</button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-primary form-control">Submit</button>
+                                        }
+                                    </div>
+                                    <div class="col-6">
+                                        <a asp-page="/Index" class="btn btn-danger form-control">Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    }
+}
+else
+{
+    <h1 class="text-danger">Access Denied</h1>
+}
+@section Scripts{
+    <script>
+
+        $(function () {
+            $("#datepicker").datepicker({ minDate: 1, maxDate: "+1W" });
+        });
+
+
+        var price = 0;
+        var guestPrice = 0;
+        var countryPrice = 0;
+
+        //Select an option in a select dropdown
+        function select(selectId, optionValToSelect) {
+            //Get the select element by it's unique ID.
+            var selectElement = document.getElementById(selectId);
+            //Get the options.
+            var selectOptions = selectElement.options;
+            //Loop through these options to find correct option
+            for (var opt, j = 0; opt = selectOptions[j]; j++) {
+                //If the option's value is equal to the option we want to select.
+                if (opt.value == optionValToSelect) {
+                    //Select the option and break the loop.
+                    selectElement.selectedIndex = j;
+                    break;
+                }
+            }
+        }
+
+        //Dynamic price calculator, is called whenever a price object changes
+        //Price objects: All Guest fields, and the Country dropdown list.
+        function PriceCalc() {
+            //Get the country selected by user
+            var CountryID = document.getElementById("CountryDrop").value;
+            //Select the same country in the hidden Countries box, which has the country type id's
+            select('Countries', CountryID);
+
+            var CountryType = document.getElementById("Countries");
+            //Get the CountryTypeId
+            var CountryTypeID = CountryType.options[CountryType.selectedIndex].text;
+
+            //Select the price based on the CountryTypeId
+            if (CountryTypeID == 1) {
+                countryPrice = @SD.DevelopedCountry;
+            }
+            else if (CountryTypeID == 2) {
+                countryPrice = @SD.UndevelopedCountry;
+            }
+
+            @*if (CountryID < 66) {
+                countryPrice = @SD.DevelopedCountry;
+            }
+            else {
+                countryPrice = @SD.UndevelopedCountry;
+            }*@
+
+
+            //Get the Guest fields
+            var firstName = document.getElementById("GuestFirstName").value.length;
+            var lastName = document.getElementById("GuestLastName").value.length;
+            var email = document.getElementById("GuestEmail").value.length;
+
+            //If all fields are empty, set the guest price to 0.
+            if (firstName == 0 && lastName == 0 && email == 0) {
+                guestPrice = 0;
+            }
+            //Set the price to the guest price.
+            else {
+                guestPrice = @SD.GuestPrice;
+            }
+
+            //Add prices together
+            price = guestPrice + countryPrice;
+            //Put the price in the price box
+            document.getElementById("txtOrderTotal").innerHTML = price;
+        }
+
+        // From https://codepen.io/allurewebsolutions/pen/NNBwyW
+
+        var count = 0;
+
+        //Sort the country list alphabetically
+        $("#CountryDrop").on("click", function (sortList) {
+            if (count < 1){
+                // choose target dropdown
+                var select = $("#CountryDrop");
+                select.html(select.find('option').sort(function (x, y) {
+                    // to change to descending order switch "<" for ">"
+                    return $(x).text() > $(y).text() ? 1 : -1;
+                }));
+                count = count + 1;
+            }
+            // select default item after sorting (first item)
+            //$('select').get(0).selectedIndex = 0;
+        });
+    </script>
+}

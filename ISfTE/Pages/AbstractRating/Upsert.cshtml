@@ -1,0 +1,168 @@
+﻿@page
+@using ISfTE.Utility
+@model ISfTE.Pages.AbstractRating.UpsertModel
+
+@if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.RaterRole))
+{
+    <form method="post" asp-action="Upsert" enctype="multipart/form-data">
+        <div class="container">
+            <div class="row px-2 mx-2 backgroundWhite border">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="AbstractRatingObj.AbstractRating.Id" />
+                <input type="hidden" asp-for="AbstractRatingObj.AbstractRating.AbstractId" />
+                <input type="hidden" asp-for="AbstractRatingObj.AbstractRating.RaterId" />
+
+                <div class="col-12 px-3" style="border-bottom: 1px solid #325d88">
+                    <h2 class="text-info">Enter Your Evaluation</h2>
+                </div>
+                <br />
+                <div class="row col-12 align-items-center">
+                    <div class="col-7">
+                        <h2>@Model.AbstractRatingObj.Abstract.Title</h2>
+                        <h3><i>Submitted by </i>@Model.AbstractRatingObj.Abstract.ApplicationUser.FullName</h3>
+                        <h4><i>From </i> @Model.AbstractRatingObj.Abstract.ApplicationUser.Institution</h4>
+                    </div>
+                    <div class="col-5">
+                        <h3><a class="btn btn-primary col-12" href="@Model.AbstractRatingObj.Abstract.DocPath" target="_blank">View Here</a></h3>
+                    </div>
+
+                    <hr />
+                </div>
+                <div class="col-12 pt-3">
+                    <div class="row" style="border-bottom: 1px solid #325d88">
+                        <div class="col-2 h4 text-info">
+                            Criteria
+                        </div>
+                        <div class="col-2 h4 text-info text-center">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rating
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row justify-content-end">
+                        <div class="col-4 h5 text-secondary text-justify align-text-bottom">
+                            <b>@SD.MinRating</b>
+                        </div>
+                        <div class="col-4 h5 text-secondary text-right align-text-bottom">
+                            <b>@SD.MaxRating</b>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="AbstractRatingObj.AbstractRating.Contribution" class="h5"><a id="infoContribution" style="cursor:pointer;">Contribution &nbsp;<i class="fas fa-info-circle"></i></a></label>
+                        </div>
+                        <div class="col-1">
+                            <span class="h5" id="outputContribution" style="font-weight:bold;color:red"></span>
+                        </div>
+                        <div class="col-8 slidecontainer">
+                            <input type="range" min="@SD.MinRating" max="@SD.MaxRating" class="slider" id="sliderContribution" asp-for="AbstractRatingObj.AbstractRating.Contribution" />
+                            <span class="text-danger" asp-validation-for="AbstractRatingObj.AbstractRating.Contribution"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="AbstractRatingObj.AbstractRating.ConferenceFit" class="h5"><a id="infoConferenceFit" style="cursor:pointer;">Conference Fit &nbsp;<i class="fas fa-info-circle"></i></a></label>
+                        </div>
+                        <div class="col-1">
+                            <span class="h5" id="outputConferenceFit" style="font-weight:bold;color:red"></span>
+                        </div>
+                        <div class="col-8 slidecontainer">
+                            <input type="range" min="@SD.MinRating" max="@SD.MaxRating" class="slider" id="sliderConferenceFit" asp-for="AbstractRatingObj.AbstractRating.ConferenceFit" />
+                            <span class="text-danger" asp-validation-for="AbstractRatingObj.AbstractRating.ConferenceFit"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label asp-for="AbstractRatingObj.AbstractRating.Mechanics" class="h5"><a id="infoMechanics" style="cursor:pointer;">Mechanics &nbsp;<i class="fas fa-info-circle"></i></a></label>
+                        </div>
+                        <div class="col-1">
+                            <span class="h5" id="outputMechanics" style="font-weight:bold;color:red"></span>
+                        </div>
+                        <div class="col-8 slidecontainer">
+                            <input type="range" min="@SD.MinRating" max="@SD.MaxRating" class="slider" id="sliderMechanics" asp-for="AbstractRatingObj.AbstractRating.Mechanics" />
+                            <span class="text-danger" asp-validation-for="AbstractRatingObj.AbstractRating.Mechanics"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-2">
+                            <label asp-for="AbstractRatingObj.AbstractRating.Comments" class="h5"></label>
+                        </div>
+                        <div class="col-10">
+                            <textarea class="form-control" asp-for="AbstractRatingObj.AbstractRating.Comments" id="txtDesc" style="height:200px"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-10 offset-2">
+                            <div class="row justify-content-around">
+                                <div class="col-5">
+                                    <button type="submit" class="btn btn-success form-control">Submit</button>
+                                </div>
+                                <div class="col-5">
+                                    <a asp-page="./Index" class="btn btn-primary form-control">Back to List</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+}
+else
+{
+    <h1 class="text-danger">Access Denied</h1>
+}
+@section Scripts {
+    <script>
+        tinymce.init(
+            {
+                selector: 'textarea',
+                plugins: 'lists',
+                menubar: 'file edit format'
+            });
+    </script>
+
+    <script>
+        var slider1 = document.getElementById("sliderConferenceFit");
+        var slider2 = document.getElementById("sliderContribution");
+        var slider3 = document.getElementById("sliderMechanics");
+        var output1 = document.getElementById("outputConferenceFit");
+        var output2 = document.getElementById("outputContribution");
+        var output3 = document.getElementById("outputMechanics");
+
+        output1.innerHTML = slider1.value;
+        output2.innerHTML = slider2.value;
+        output3.innerHTML = slider3.value;
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider1.oninput = function () {
+            output1.innerHTML = this.value;
+        }
+        slider2.oninput = function () {
+            output2.innerHTML = this.value;
+        }
+        slider3.oninput = function () {
+            output3.innerHTML = this.value;
+        }
+    </script>
+
+    <script>
+        var info1 = document.getElementById("infoContribution");
+        var info2 = document.getElementById("infoConferenceFit");
+        var info3 = document.getElementById("infoMechanics");
+
+        info1.onclick = function () {
+            swal("Contribution", '@SD.InfoContribution', "info");
+        }
+
+        info2.onclick = function () {
+            swal("Conference Fit", '@SD.InfoConferenceFit', "info");
+        }
+
+        info3.onclick = function () {
+            swal("Mechanics", '@SD.InfoMechanics', "info");
+        }
+    </script>
+
+}

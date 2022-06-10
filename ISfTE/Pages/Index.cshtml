@@ -1,0 +1,124 @@
+﻿@page
+@model IndexModel
+@using ISfTE.Utility
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@if (User.IsInRole(SD.AttendeeRole))
+{
+    <div class="row justify-content-around">
+        <div class="col-1">
+            <div class="row justify-content-center">
+                <h6 class="text-secondary"><i>Signed Up</i></h6>
+            </div>
+            <div class="row justify-content-center">
+                <i class="fas fa-check" id="signedUpIcon"></i>
+            </div>
+        </div>
+        <div class="col-2 align-items-center" style="padding:10px;">
+            <div class="" id="barToUpload" style="height:5px; border-radius:15px;">
+
+            </div>
+        </div>
+        <div class="col-1">
+            <a asp-page="AbstractUpload/Index" id="linkUpload" style="text-decoration: none;">
+                <div class="row justify-content-center">
+                    <h6 class="text-secondary"><i>Uploaded</i></h6>
+                </div>
+                <div class="row justify-content-center">
+                    <i class="fas" id="uploadedIcon"></i>
+                </div>
+            </a>
+        </div>
+        <div class="col-2 align-items-center" style="padding:10px;">
+            <div class="" id="barToApproved" style="height:5px; border-radius:15px;">
+
+            </div>
+        </div>
+        <div class="col-1">
+            <a asp-page="AbstractUpload/Index" id="linkApproved" style="text-decoration: none;">
+                <div class="row justify-content-center">
+                    <h6 class="text-secondary"><i>Approved</i></h6>
+                </div>
+                <div class="row justify-content-center">
+                    <i class="fas" id="approvedIcon"></i>
+                </div>
+            </a>
+        </div>
+        <div class="col-2 align-items-center" style="padding:10px;">
+            <div class="" id="barToRegistered" style="height:5px; border-radius:15px;">
+
+            </div>
+        </div>
+        <div class="col-1">
+            <a asp-page="Registration/Upsert" id="linkRegistered" style="text-decoration: none;">
+                <div class="row justify-content-center">
+                    <h6 class="text-secondary"><i>Registered</i></h6>
+                </div>
+                <div class="row justify-content-center">
+                    <i class="fas" id="registeredIcon"></i>
+                </div>
+            </a>
+        </div>
+
+    </div>
+}
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Display Home Page Information Here</p>
+</div>
+
+@section Scripts
+{
+
+    <script>
+
+        if ("@Model.ApplicationUser.Status" == "@SD.Initial") {
+            document.getElementById("uploadedIcon").className = "far fa-square";
+            document.getElementById("approvedIcon").className += " fa-lock";
+            document.getElementById("registeredIcon").className += " fa-lock";
+
+            document.getElementById("barToUpload").className = "bg-primary";
+            document.getElementById("barToApproved").className = "bg-dark";
+            document.getElementById("barToRegistered").className = "bg-dark";
+        }
+        else if ("@Model.ApplicationUser.Status" == "@SD.AbstractSubmitted") {
+            document.getElementById("uploadedIcon").className += " fa-check";
+            document.getElementById("approvedIcon").className += " fa-spinner";
+            document.getElementById("registeredIcon").className += " fa-lock";
+
+            document.getElementById("barToUpload").className = "bg-success";
+            document.getElementById("barToApproved").className = "bg-primary";
+            document.getElementById("barToRegistered").className = "bg-dark";
+        }
+        else if ("@Model.ApplicationUser.Status" == "@SD.AbstractRejected") {
+            document.getElementById("uploadedIcon").className += " fa-check";
+            document.getElementById("approvedIcon").className += " fa-times";
+            document.getElementById("registeredIcon").className += " fa-lock";
+
+            document.getElementById("barToUpload").className = "bg-success";
+            document.getElementById("barToApproved").className = "bg-danger";
+            document.getElementById("barToRegistered").className = "bg-dark";
+        }
+        else if ("@Model.ApplicationUser.Status" == "@SD.AbstractApproved") {
+            document.getElementById("uploadedIcon").className += " fa-check";
+            document.getElementById("approvedIcon").className += " fa-check";
+            document.getElementById("registeredIcon").className = "far fa-square";
+
+            document.getElementById("barToUpload").className = "bg-success";
+            document.getElementById("barToApproved").className = "bg-success";
+            document.getElementById("barToRegistered").className = "bg-primary";
+        }
+        else if ("@Model.ApplicationUser.Status" == "@SD.Registered") {
+            document.getElementById("uploadedIcon").className += " fa-check";
+            document.getElementById("approvedIcon").className += " fa-check";
+            document.getElementById("registeredIcon").className += " fa-check";
+
+            document.getElementById("barToUpload").className = "bg-success";
+            document.getElementById("barToApproved").className = "bg-success";
+            document.getElementById("barToRegistered").className = "bg-success";
+        }
+
+    </script>
+}

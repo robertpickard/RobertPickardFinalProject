@@ -1,0 +1,155 @@
+﻿@page
+@model ISfTE.Pages.AbstractUpload.IndexModel
+@using ISfTE.Utility
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if (User.IsInRole(SD.AdminRole) || User.IsInRole(SD.RaterRole) || User.IsInRole(SD.AttendeeRole))
+{
+    @if (Model.Abstract.Id == 0)
+    {
+        <form method="post" id="uploadForm" asp-action="Upsert" enctype="multipart/form-data">
+            <div class="container">
+                <div class="row px-2 mx-2 backgroundWhite">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <input type="hidden" asp-for="Abstract.Id" />
+                    <input type="hidden" asp-for="Abstract.AuthorId" />
+                    <div class="col-8 offset-2 card">
+                        <h3 class="card-title text-info">Upload Your Abstract</h3>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-3 h5">
+                                    <label asp-for="Abstract.Title"></label>
+                                </div>
+                                <div class="col-9">
+                                    <input class="form-control" asp-for="Abstract.Title" />
+                                    <span class="text-danger" asp-validation-for="Abstract.Title"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-3 h5">
+                                    <label asp-for="Abstract.DocPath"></label>
+                                </div>
+                                <div class="col-9">
+                                    <input type="file" accept=".docx,.pdf,.doc" class="form-control" id="files" name="files" />
+                                    <span class="text-danger field-validation-error" id="fileExists"></span>
+                                    <br />
+                                    <span class="text-danger field-validation-error" id="fileSize"></span>
+                                    <br />
+                                    <span class="text-danger field-validation-error" id="fileExtension"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-10 offset-2">
+                                    <div class="row justify-content-around">
+                                        <div class="col-5">
+                                            <button type="button" id="upload" class="btn btn-primary form-control">Submit</button>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-around">
+                                        <div class="col-9">
+                                            <h6 class="text-secondary"><i>Only accepts .PDF,.DOC, and .DOCX less than 1MB</i></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+        <div class="col-8 offset-2 card text-center">
+            <h2 class="card-title text-success">Your Abstract is Uploaded</h2>
+            <div class="card-body">
+                <h3>@Model.Abstract.Title</h3>
+                @if (Model.Abstract.Approved == true && Model.Abstract.ReviewDate != null)
+                {
+                    <h4>Status: <b class="text-success">Approved!</b></h4>
+                }
+                else if (Model.Abstract.Approved == false && Model.Abstract.ReviewDate != null)
+                {
+                    <h4>Status: <b class="text-danger">Rejected.</b></h4>
+                }
+                else
+                {
+                    <h4>Status: <i class="text-secondary">Pending</i></h4>
+                }
+                <div class="row justify-content-center">
+                    <div class="col-5">
+                        <h5><a class="btn btn-primary col-12" href="@Model.Abstract.DocPath" target="_blank">View Here</a></h5>
+                    </div>
+                    <div class="col-5">
+                        <h5><a class="btn btn-success col-12" asp-page="../Index">Return Home</a></h5>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+}
+else
+{
+    <h1 class="text-danger">Access Denied</h1>
+}
+
+@section Scripts{
+    <script>
+        var upload = document.getElementById("upload");
+
+        upload.onclick = function () {
+            if (document.getElementById("files").files.length == 0) {
+                document.getElementById("fileExists").innerHTML = "Please upload your abstract file";
+            }
+            else {
+                document.getElementById("fileExists").innerHTML = "";
+
+                swal({
+                    title: "Are you sure you want to Upload?",
+                    text: "You can only submit one abstract for review!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                }).then((willUpload) => {
+                    if (willUpload) {
+
+                        var form = document.getElementById("uploadForm");
+                        form.submit();
+                    }
+                });
+            }
+        }
+    </script>
+    <script>
+        $("#files").on("change", function (e) {
+
+            var count=1;
+            var files = e.currentTarget.files; // puts all files into an array
+
+            // call them as such; files[0].size will get you the file size of the 0th file
+            var filesize = ((files[0].size/1024)/1024).toFixed(4); // MB
+            var fileExtension = files[0].name.split('.').pop();
+
+            if (filesize > @SD.MaxUploadMB) {
+                $("#files").val('');
+                document.getElementById("fileSize").innerHTML = "File uploads are restricted to 1MB";
+            }
+            else {
+                document.getElementById("fileSize").innerHTML = "";
+            }
+            if (fileExtension != "pdf" && fileExtension != "doc" && fileExtension != "docx") {
+                $("#files").val('');
+                document.getElementById("fileExtension").innerHTML = "File uploads are restricted to .pdf, .docx, or .doc";
+            }
+            else {
+                document.getElementById("fileExtension").innerHTML = "";
+            }
+        });
+    </script>
+
+}

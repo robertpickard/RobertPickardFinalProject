@@ -1,0 +1,98 @@
+﻿@using ISfTE.Utility
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ISfTE</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="~/css/jquery-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css" />
+</head>
+ 
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand text-white" asp-area="" asp-page="/Index"><b>ISfTE</b></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (User.IsInRole(SD.AdminRole))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-white dropdown-toggle" href="#" id="navBarDropDown" data-toggle="dropdown">
+                                    <i class="fas fa-user-cog"></i>&nbsp;Admin
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item text-dark" asp-page="/Admin/User/Index"><i class="fas fa-users"></i>&nbsp;Users</a>
+                                    <a class="dropdown-item text-dark" asp-page="/Admin/Registration/Index"><i class="fas fa-id-card"></i>&nbsp;Registrations</a>
+                                    <a class="dropdown-item text-dark" asp-page="/Admin/Country/Index"><i class="fas fa-globe-americas"></i>&nbsp;Countries</a>
+                                    <a class="dropdown-item text-dark" asp-page="/Index"><i class="fas fa-paper-plane"></i>&nbsp;Email</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-page="/AbstractReview/Index"><i class="fas fa-clipboard-check"></i>&nbsp;Reviewal</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole(SD.RaterRole) || User.IsInRole(SD.AdminRole))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-page="/AbstractRating/Index"><i class="fas fa-clipboard-list"></i>&nbsp;Rating</a>
+                            </li>
+                        }
+                        @if (User.IsInRole(SD.RaterRole) || User.IsInRole(SD.AdminRole) || User.IsInRole(SD.ApplicantRole) || User.IsInRole(SD.AttendeeRole))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-page="/AbstractUpload/Index"><i class="fas fa-file-upload"></i>&nbsp;Abstract Upload</a>
+                            </li>
+                        }
+                        @if (User.IsInRole(SD.RaterRole) || User.IsInRole(SD.AdminRole) || User.IsInRole(SD.AttendeeRole))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-page="/Registration/Upsert"><i class="fas fa-user-edit"></i>&nbsp;Registration</a>
+                            </li>
+                        }
+                        else if (User.IsInRole(SD.ApplicantRole))
+                        {
+                            <li class="nav-item text-white">
+                                <i class="fas fa-lock"></i>&nbsp;Registration
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2020 - ISfTE - <a asp-area="" asp-page="/Privacy">Privacy</a> - <a asp-area="" asp-page="/About">About</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/r02ssprft1wowbe3apjjax1s2zyge2ewd7sm44cvr7mwgul8/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
